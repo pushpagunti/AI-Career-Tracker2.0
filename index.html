@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ai-Digital Well-being</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0f;
+      color: #e2e2ea;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ===== SIDEBAR ===== */
+    aside {
+      width: 240px;
+      background: #0d0d14;
+      border-right: 1px solid #1a1a28;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .logo-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px 16px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: #4ade80;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .logo-text .t1 { font-size: 14px; font-weight: 700; color: #fff; }
+    .logo-text .t2 { font-size: 11px; color: #555; }
+
+    .deep-work-card {
+      background: #13131f;
+      border: 1px solid #1e1e2e;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .dw-title { font-size: 12px; font-weight: 600; color: #ccc; }
+    .dw-sub { font-size: 10px; color: #444; margin-top: 2px; margin-bottom: 10px; }
+    .dw-row { display: flex; align-items: center; justify-content: space-between; }
+    .toggle { position: relative; width: 38px; height: 20px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0;
+      background: #2a2a3e; border-radius: 20px;
+      cursor: pointer; transition: 0.3s;
+    }
+    .slider:before {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      left: 3px; bottom: 3px;
+      background: #fff; border-radius: 50%; transition: 0.3s;
+    }
+    input:checked + .slider { background: #4ade80; }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #666;
+      text-decoration: none;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    nav a:hover { background: #13131f; color: #bbb; }
+    nav a.active {
+      background: #1a2e1a;
+      color: #4ade80;
+      border-color: #2d4d2d;
+    }
+    nav a .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 10px;
+      color: #333;
+      padding: 8px 10px;
+      line-height: 1.6;
+    }
+    .sidebar-footer a { color: #4ade80; text-decoration: none; }
+
+    /* ===== MAIN ===== */
+    main { flex: 1; overflow-y: auto; padding: 32px 36px; background: #0a0a0f; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .page-title { font-size: 26px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .page-sub { font-size: 13px; color: #444; margin-bottom: 28px; }
+
+    /* ===== STAT CARDS ===== */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: #11111b;
+      border: 1px solid #1c1c2e;
+      border-radius: 12px;
+      padding: 18px 20px;
+      position: relative;
+    }
+    .stat-card .sc-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stat-card .sc-value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      color: #e2e2ea;
+    }
+    .sc-icon { font-size: 16px; }
+
+    /* ===== CHART CARDS ===== */
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .chart-card {
+      background: #11111b;
+      border: 1px solid #1c1c2e;
+      border-radius: 12px;
+      padding: 20px 24px;
+    }
+    .chart-card h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e2ea;
+      margin-bottom: 16px;
+    }
+    .empty-chart {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      gap: 10px;
+    }
+    .empty-icon { font-size: 36px; opacity: 0.15; }
+    .empty-text { font-size: 13px; color: #333; }
+    .empty-sub { font-size: 11px; color: #2a2a3a; }
+
+    /* ===== LOG ACTIVITY PAGE ===== */
+    .log-section {
+      background: #11111b;
+      border: 1px solid #1c1c2e;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .log-section .ls-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 14px;
+    }
+    .activity-input {
+      width: 100%;
+      background: #0d0d18;
+      border: 1px solid #1e1e2e;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #e2e2ea;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .activity-input::placeholder { color: #333; }
+    .activity-input:focus { border-color: #4ade8050; }
+
+    /* Circular Timer */
+    .timer-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      gap: 20px;
+    }
+    .timer-ring-wrap {
+      position: relative;
+      width: 160px; height: 160px;
+    }
+    .timer-ring {
+      width: 160px; height: 160px;
+      transform: rotate(-90deg);
+    }
+    .timer-ring .ring-bg {
+      fill: none;
+      stroke: #1e1e2e;
+      stroke-width: 6;
+    }
+    .timer-ring .ring-fill {
+      fill: none;
+      stroke: #4ade80;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 440;
+      stroke-dashoffset: 440;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .timer-display {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+      color: #666;
+      letter-spacing: 2px;
+    }
+    .timer-display.running { color: #e2e2ea; }
+    .timer-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 24px;
+      border-radius: 8px;
+      border: 1px solid #2a2a3a;
+      background: #13131f;
+      color: #666;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .timer-btn.ready { color: #4ade80; border-color: #4ade8040; background: #1a2e1a; }
+    .timer-btn.active-btn { color: #f87171; border-color: #f8717140; background: #2e1a1a; }
+    .timer-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Semantic detection */
+    .semantic-card {
+      background: #11111b;
+      border: 1px solid #1c1c2e;
+      border-radius: 14px;
+      padding: 20px 24px;
+    }
+    .semantic-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #888;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .semantic-row {
+      font-size: 12px;
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+    .sem-productive { color: #4ade80; font-weight: 600; }
+    .sem-learning { color: #60a5fa; font-weight: 600; }
+    .sem-distraction { color: #f87171; font-weight: 600; }
+    .sem-keywords { color: #555; }
+
+    /* ===== CAREER ROADMAP ===== */
+    .career-header-card {
+      background: #11111b;
+      border: 1px solid #1c1c2e;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .role-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .role-btn {
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid #1e1e2e;
+      background: #0d0d14;
+      color: #555;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .role-btn.active { background: #4ade8015; color: #4ade80; border-color: #4ade8040; }
+    .level-tag {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #4ade8015;
+      color: #4ade80;
+      border: 1px solid #4ade8030;
+      margin-bottom: 8px;
+    }
+    .career-role-name { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .career-xp-text { font-size: 12px; color: #555; margin-bottom: 14px; }
+    .progress-bar {
+      background: #1a1a2e;
+      border-radius: 20px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #4ade80, #22d3ee);
+      transition: width 0.6s ease;
+    }
+    .milestone-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .milestone-item {
+      background: #0d0d14;
+      border: 1px solid #1a1a28;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+    }
+    .milestone-item.done { border-color: #4ade8030; background: #0d1a0d; }
+    .milestone-item.done .mi-hours { color: #4ade80; }
+    .milestone-item.done .mi-label { color: #4ade8088; }
+    .mi-hours { font-size: 18px; font-weight: 700; color: #333; font-family: monospace; margin-bottom: 4px; }
+    .mi-label { font-size: 11px; color: #333; }
+    .mi-check { font-size: 10px; margin-top: 4px; color: #4ade80; }
+
+    /* ===== HISTORY ===== */
+    .history-filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .filter-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid #1e1e2e;
+      background: #11111b;
+      color: #555;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .filter-btn.active { background: #4ade8015; color: #4ade80; border-color: #4ade8040; }
+    .history-item {
+      background: #11111b;
+      border: 1px solid #1c1c2e;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .hi-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: #ccc;
+      max-width: 55%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .hi-date { font-size: 11px; color: #444; margin-top: 3px; }
+    .hi-right { display: flex; align-items: center; gap: 10px; }
+    .hi-dur { font-size: 13px; font-family: monospace; color: #555; }
+    .badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .badge.productive { background: #4ade8015; color: #4ade80; border: 1px solid #4ade8030; }
+    .badge.learning { background: #60a5fa15; color: #60a5fa; border: 1px solid #60a5fa30; }
+    .badge.distraction { background: #f8717115; color: #f87171; border: 1px solid #f8717130; }
+
+    /* ===== NUDGE OVERLAY ===== */
+    #nudge-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(16px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 18px;
+      text-align: center;
+    }
+    #nudge-overlay.show { display: flex; }
+    .nudge-icon { font-size: 52px; }
+    .nudge-title { font-size: 24px; font-weight: 700; color: #fff; }
+    .nudge-sub { font-size: 14px; color: #555; max-width: 380px; line-height: 1.7; }
+    .nudge-countdown {
+      font-size: 48px;
+      font-weight: 700;
+      color: #f87171;
+      font-family: monospace;
+      min-height: 60px;
+    }
+    .nudge-intention {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 380px;
+    }
+    .nudge-intention.show { display: flex; }
+    .nudge-intention p { font-size: 13px; color: #888; }
+    .nudge-input {
+      width: 100%;
+      background: #13131f;
+      border: 1px solid #2a2a3e;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #e2e2ea;
+      font-family: inherit;
+      outline: none;
+      text-align: center;
+    }
+    .nudge-proceed {
+      padding: 12px 28px;
+      background: #4ade8020;
+      color: #4ade80;
+      border: 1px solid #4ade8050;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .nudge-proceed:hover { background: #4ade8030; }
+
+    /* ===== BLOCKED OVERLAY ===== */
+    #blocked-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(16px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+    #blocked-overlay.show { display: flex; }
+    .blocked-icon { font-size: 52px; }
+    .blocked-title { font-size: 26px; font-weight: 700; color: #f87171; }
+    .blocked-sub { font-size: 14px; color: #555; max-width: 380px; line-height: 1.7; }
+    .blocked-btn {
+      padding: 12px 28px;
+      background: #4ade8020;
+      color: #4ade80;
+      border: 1px solid #4ade8050;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside>
+  <div class="logo-block">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-text">
+      <div class="t1">AI Career</div>
+      <div class="t2">Tracker</div>
+    </div>
+  </div>
+
+  <div class="deep-work-card">
+    <div class="dw-title">Deep Work</div>
+    <div class="dw-sub" id="dw-sub-text">Enforcement off</div>
+    <div class="dw-row">
+      <label class="toggle">
+        <input type="checkbox" id="deep-work-cb" onchange="toggleDeepWork(this.checked)"/>
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <nav>
+    <a class="active" onclick="showPage('dashboard', this)">
+      <span class="nav-icon">⊞</span> Dashboard
+    </a>
+    <a onclick="showPage('log', this)">
+      <span class="nav-icon">⊕</span> Log Activity
+    </a>
+    <a onclick="showPage('career', this)">
+      <span class="nav-icon">⊙</span> Career Roadmap
+    </a>
+    <a onclick="showPage('history', this)">
+      <span class="nav-icon">↺</span> History
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    © 2026. Built with ♥ using <a href="#">caffeine.ai</a>
+  </div>
+</aside>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="page active">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub">Your productivity at a glance</div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="sc-label">TOTAL FOCUS <span class="sc-icon" style="color:#4ade80">⏱</span></div>
+        <div class="sc-value" id="stat-focus">0s</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">LEARNING <span class="sc-icon" style="color:#60a5fa">ℹ</span></div>
+        <div class="sc-value" id="stat-learning">0s</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">DISTRACTION <span class="sc-icon" style="color:#f87171">🔥</span></div>
+        <div class="sc-value" id="stat-distraction">0s</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">SESSIONS <span class="sc-icon" style="color:#facc15">◎</span></div>
+        <div class="sc-value" id="stat-sessions">0</div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Productivity Ratio</h3>
+        <div id="ratio-wrap">
+          <div class="empty-chart">
+            <div class="empty-icon">◎</div>
+            <div class="empty-text">No data yet</div>
+            <div class="empty-sub">Log your first activity</div>
+          </div>
+        </div>
+        <canvas id="ratio-chart" style="display:none" height="220"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>7-Day Focus Trend</h3>
+        <div id="trend-wrap">
+          <div class="empty-chart">
+            <div class="empty-icon">⏱</div>
+            <div class="empty-text">No data for the past 7 days</div>
+          </div>
+        </div>
+        <canvas id="trend-chart" style="display:none" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG ACTIVITY -->
+  <div id="log" class="page">
+    <div class="page-title">Log Activity</div>
+    <div class="page-sub">Track what you're working on, second by second.</div>
+
+    <div class="log-section">
+      <div class="ls-label">WHAT ARE YOU WORKING ON?</div>
+      <input
+        type="text"
+        class="activity-input"
+        id="activity-input"
+        placeholder="e.g. React tutorial on Udemy, VSCode project..."
+        oninput="onActivityInput(this.value)"
+      />
+    </div>
+
+    <div class="log-section">
+      <div class="timer-section">
+        <div class="timer-ring-wrap">
+          <svg class="timer-ring" viewBox="0 0 160 160">
+            <circle class="ring-bg" cx="80" cy="80" r="70"/>
+            <circle class="ring-fill" id="ring-fill" cx="80" cy="80" r="70"/>
+          </svg>
+          <div class="timer-display" id="timer-display">00 : 00</div>
+        </div>
+        <button class="timer-btn" id="timer-btn" onclick="toggleTimer()" disabled>
+          ▶ Start Timer
+        </button>
+      </div>
+    </div>
+
+    <div class="semantic-card">
+      <div class="semantic-title">💡 Semantic Detection</div>
+      <div class="semantic-row">
+        <span class="sem-productive">Productive:</span>
+        <span class="sem-keywords"> vscode, figma, notion, work, design, build...</span>
+      </div>
+      <div class="semantic-row">
+        <span class="sem-learning">Learning:</span>
+        <span class="sem-keywords"> tutorial, course, docs, stackoverflow, python...</span>
+      </div>
+      <div class="semantic-row">
+        <span class="sem-distraction">Distraction:</span>
+        <span class="sem-keywords"> netflix, youtube, reddit, gaming, tiktok...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAREER ROADMAP -->
+  <div id="career" class="page">
+    <div class="page-title">Career Roadmap</div>
+    <div class="page-sub">Track your progress toward your career goal.</div>
+
+    <div class="career-header-card">
+      <div class="role-selector">
+        <button class="role-btn active" onclick="selectRole('Software Developer', this)">Software Developer</button>
+        <button class="role-btn" onclick="selectRole('Data Scientist', this)">Data Scientist</button>
+        <button class="role-btn" onclick="selectRole('UI/UX Designer', this)">UI/UX Designer</button>
+        <button class="role-btn" onclick="selectRole('DevOps Engineer', this)">DevOps Engineer</button>
+      </div>
+      <div class="level-tag" id="career-level-tag">Beginner</div>
+      <div class="career-role-name" id="career-role-name">Software Developer</div>
+      <div class="career-xp-text" id="career-xp-text">0.0h / 10h to next level</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="career-prog-fill" style="width:0%"></div>
+      </div>
+      <div class="milestone-grid">
+        <div class="milestone-item" id="ms-1">
+          <div class="mi-hours">10h</div>
+          <div class="mi-label">Novice</div>
+        </div>
+        <div class="milestone-item" id="ms-2">
+          <div class="mi-hours">25h</div>
+          <div class="mi-label">Apprentice</div>
+        </div>
+        <div class="milestone-item" id="ms-3">
+          <div class="mi-hours">50h</div>
+          <div class="mi-label">Practitioner</div>
+        </div>
+        <div class="milestone-item" id="ms-4">
+          <div class="mi-hours">100h</div>
+          <div class="mi-label">Professional</div>
+        </div>
+        <div class="milestone-item" id="ms-5">
+          <div class="mi-hours">200h</div>
+          <div class="mi-label">Expert</div>
+        </div>
+        <div class="milestone-item" id="ms-6">
+          <div class="mi-hours">500h</div>
+          <div class="mi-label">Master</div>
+          <div class="mi-check" style="display:none">✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="history" class="page">
+    <div class="page-title">History</div>
+    <div class="page-sub">Your past activity sessions.</div>
+
+    <div class="history-filters">
+      <button class="filter-btn active" onclick="filterHistory('all', this)">All</button>
+      <button class="filter-btn" onclick="filterHistory('productive', this)">Productive</button>
+      <button class="filter-btn" onclick="filterHistory('learning', this)">Learning</button>
+      <button class="filter-btn" onclick="filterHistory('distraction', this)">Distraction</button>
+    </div>
+    <div id="history-list">
+      <div style="color:#333;font-size:13px;padding:30px 0;text-align:center">
+        No sessions yet. Start logging activity to see history.
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- NUDGE OVERLAY -->
+<div id="nudge-overlay">
+  <div class="nudge-icon">😮‍💨</div>
+  <div class="nudge-title">Take a breath...</div>
+  <div class="nudge-sub" id="nudge-app-name">You're about to open a distraction. Pause for a moment.</div>
+  <div class="nudge-countdown" id="nudge-countdown">5</div>
+  <div class="nudge-intention" id="nudge-intention">
+    <p>Type a 5-word intention to continue (e.g. "I am taking a break")</p>
+    <input type="text" class="nudge-input" id="nudge-input" placeholder="I am taking a break..." />
+    <button class="nudge-proceed" onclick="proceedFromNudge()">Continue</button>
+  </div>
+</div>
+
+<!-- BLOCKED OVERLAY -->
+<div id="blocked-overlay">
+  <div class="blocked-icon">🔒</div>
+  <div class="blocked-title">Focus is currently locked</div>
+  <div class="blocked-sub" id="blocked-msg">Deep Work mode is ON. This distraction is blocked.</div>
+  <button class="blocked-btn" onclick="document.getElementById('blocked-overlay').classList.remove('show')">
+    Got it, back to work
+  </button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ===== STATE =====
+let timerInterval = null;
+let timerSeconds = 0;
+let timerRunning = false;
+let currentActivity = '';
+let currentCategory = 'productive';
+let deepWork = false;
+let allHistory = [];
+let ratioChart = null;
+let trendChart = null;
+
+// ===== UTILS =====
+function fmt(s) {
+  s = Math.round(s || 0);
+  if (s >= 3600) return `${Math.floor(s/3600)}h ${Math.floor((s%3600)/60)}m`;
+  if (s >= 60) return `${Math.floor(s/60)}m ${s%60}s`;
+  return `${s}s`;
+}
+
+function fmtTimer(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')} : ${String(sec).padStart(2,'0')}`;
+}
+
+function categorize(text) {
+  const t = (text || '').toLowerCase();
+  const learning = ['tutorial','course','docs','stackoverflow','python','java','html','css','react','node','javascript','udemy','coursera','documentation','leetcode','hackerrank','github','programming','learning'];
+  const distraction = ['netflix','youtube','facebook','instagram','reddit','tiktok','gaming','twitch','spotify','twitter','reels','comedy','trailer','movie','series','meme','snapchat','whatsapp'];
+  if (learning.some(k => t.includes(k))) return 'learning';
+  if (distraction.some(k => t.includes(k))) return 'distraction';
+  return 'productive';
+}
+
+// ===== NAVIGATION =====
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (el) el.classList.add('active');
+  if (id === 'history') renderHistory('all');
+  if (id === 'career') loadCareer();
+  if (id === 'dashboard') loadDashboard();
+}
+
+// ===== LOG ACTIVITY =====
+function onActivityInput(val) {
+  currentActivity = val.trim();
+  const btn = document.getElementById('timer-btn');
+  if (currentActivity) {
+    btn.disabled = false;
+    btn.className = 'timer-btn ready';
+    btn.innerHTML = '▶ Start Timer';
+  } else {
+    btn.disabled = true;
+    btn.className = 'timer-btn';
+    btn.innerHTML = '▶ Start Timer';
+  }
+}
+
+function toggleTimer() {
+  if (timerRunning) {
+    stopTimer();
+  } else {
+    startTimer();
+  }
+}
+
+function startTimer() {
+  if (!currentActivity) return;
+  currentCategory = categorize(currentActivity);
+
+  // Check for nudge (distraction + deep work OFF)
+  if (currentCategory === 'distraction' && !deepWork) {
+    showNudge(currentActivity);
+    return;
+  }
+  // Check for block (distraction + deep work ON)
+  if (currentCategory === 'distraction' && deepWork) {
+    document.getElementById('blocked-msg').textContent = `"${currentActivity}" is blocked. Focus is currently locked.`;
+    document.getElementById('blocked-overlay').classList.add('show');
+    return;
+  }
+
+  timerRunning = true;
+  timerSeconds = 0;
+  const btn = document.getElementById('timer-btn');
+  btn.className = 'timer-btn active-btn';
+  btn.innerHTML = '⏹ Stop & Save';
+  document.getElementById('timer-display').classList.add('running');
+
+  const ringFill = document.getElementById('ring-fill');
+  const circumference = 440;
+
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    document.getElementById('timer-display').textContent = fmtTimer(timerSeconds);
+    // Animate ring (1 full rotation every 60 seconds)
+    const progress = (timerSeconds % 60) / 60;
+    ringFill.style.strokeDashoffset = circumference - (progress * circumference);
+  }, 1000);
+}
+
+function stopTimer() {
+  if (!timerRunning) return;
+  clearInterval(timerInterval);
+  timerRunning = false;
+
+  if (timerSeconds >= 2) {
+    const record = {
+      app_name: currentActivity,
+      category: currentCategory,
+      duration: timerSeconds,
+      date: new Date().toISOString().split('T')[0],
+      timestamp: Date.now()
+    };
+    // Save via IPC if in Electron, else localStorage
+    saveRecord(record);
+  }
+
+  timerSeconds = 0;
+  document.getElementById('timer-display').textContent = '00 : 00';
+  document.getElementById('timer-display').classList.remove('running');
+  document.getElementById('ring-fill').style.strokeDashoffset = 440;
+  const btn = document.getElementById('timer-btn');
+  btn.className = 'timer-btn ready';
+  btn.innerHTML = '▶ Start Timer';
+  document.getElementById('activity-input').value = '';
+  currentActivity = '';
+  onActivityInput('');
+}
+
+// ===== DATA STORAGE =====
+function saveRecord(record) {
+  // Try Electron IPC first, fall back to localStorage
+  if (window.api && window.api.saveSession) {
+    window.api.saveSession(record);
+  } else {
+    let sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
+    sessions.push(record);
+    localStorage.setItem('sessions', JSON.stringify(sessions));
+  }
+  loadDashboard();
+}
+
+function getSessions() {
+  if (window.api && window.api.getSessionsSync) {
+    return window.api.getSessionsSync();
+  }
+  return JSON.parse(localStorage.getItem('sessions') || '[]');
+}
+
+// ===== DASHBOARD =====
+function loadDashboard() {
+  // Try Electron IPC
+  if (window.api && window.api.getStats) {
+    window.api.getStats().then(stats => {
+      let p=0, l=0, d=0;
+      stats.forEach(s => {
+        if (s.category === 'productive') p = s.total;
+        if (s.category === 'learning') l = s.total;
+        if (s.category === 'distraction') d = s.total;
+      });
+      document.getElementById('stat-focus').textContent = fmt(p + l);
+      document.getElementById('stat-learning').textContent = fmt(l);
+      document.getElementById('stat-distraction').textContent = fmt(d);
+      renderRatioChart(p, l, d);
+    });
+    window.api.get7Day().then(data => renderTrendChart(data));
+    window.api.getHistory().then(rows => {
+      document.getElementById('stat-sessions').textContent = rows.length;
+    });
+  } else {
+    // localStorage fallback
+    const sessions = getSessions();
+    const today = new Date().toISOString().split('T')[0];
+    const todaySessions = sessions.filter(s => s.date === today);
+    let p=0, l=0, d=0;
+    todaySessions.forEach(s => {
+      if (s.category === 'productive') p += s.duration;
+      if (s.category === 'learning') l += s.duration;
+      if (s.category === 'distraction') d += s.duration;
+    });
+    document.getElementById('stat-focus').textContent = fmt(p + l);
+    document.getElementById('stat-learning').textContent = fmt(l);
+    document.getElementById('stat-distraction').textContent = fmt(d);
+    document.getElementById('stat-sessions').textContent = sessions.length;
+    renderRatioChart(p, l, d);
+    renderTrendChartLocal(sessions);
+  }
+}
+
+function renderRatioChart(p, l, d) {
+  const total = p + l + d;
+  const wrap = document.getElementById('ratio-wrap');
+  const canvas = document.getElementById('ratio-chart');
+  if (total === 0) { wrap.style.display = ''; canvas.style.display = 'none'; return; }
+  wrap.style.display = 'none'; canvas.style.display = 'block';
+  if (ratioChart) ratioChart.destroy();
+  ratioChart = new Chart(canvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Productive', 'Learning', 'Distraction'],
+      datasets: [{ data: [p, l, d], backgroundColor: ['#4ade80', '#60a5fa', '#f87171'], borderWidth: 0, hoverOffset: 4 }]
+    },
+    options: {
+      responsive: true, cutout: '68%',
+      plugins: { legend: { labels: { color: '#666', font: { size: 11 }, padding: 16 } } }
+    }
+  });
+}
+
+function renderTrendChartLocal(sessions) {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+  const productive = days.map(day => {
+    const sum = sessions.filter(s => s.date === day && s.category === 'productive').reduce((a,s) => a+s.duration, 0);
+    return Math.round(sum / 360) / 10;
+  });
+  const learning = days.map(day => {
+    const sum = sessions.filter(s => s.date === day && s.category === 'learning').reduce((a,s) => a+s.duration, 0);
+    return Math.round(sum / 360) / 10;
+  });
+  const hasData = [...productive, ...learning].some(v => v > 0);
+  const wrap = document.getElementById('trend-wrap');
+  const canvas = document.getElementById('trend-chart');
+  if (!hasData) { wrap.style.display = ''; canvas.style.display = 'none'; return; }
+  wrap.style.display = 'none'; canvas.style.display = 'block';
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: days.map(d => d.slice(5)),
+      datasets: [
+        { label: 'Productive (h)', data: productive, borderColor: '#4ade80', backgroundColor: '#4ade8015', fill: true, tension: 0.4, pointRadius: 3 },
+        { label: 'Learning (h)', data: learning, borderColor: '#60a5fa', backgroundColor: '#60a5fa15', fill: true, tension: 0.4, pointRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { ticks: { color: '#444', font: { size: 11 } }, grid: { color: '#1a1a28' } },
+        y: { ticks: { color: '#444', font: { size: 11 } }, grid: { color: '#1a1a28' }, beginAtZero: true }
+      },
+      plugins: { legend: { labels: { color: '#666', font: { size: 11 }, padding: 16 } } }
+    }
+  });
+}
+
+function renderTrendChart(data) {
+  const days = [...new Set(data.map(d => d.date))].sort();
+  const productive = days.map(day => {
+    const r = data.find(d => d.date === day && d.category === 'productive');
+    return r ? Math.round(r.total/360)/10 : 0;
+  });
+  const learning = days.map(day => {
+    const r = data.find(d => d.date === day && d.category === 'learning');
+    return r ? Math.round(r.total/360)/10 : 0;
+  });
+  const hasData = [...productive, ...learning].some(v => v > 0);
+  const wrap = document.getElementById('trend-wrap');
+  const canvas = document.getElementById('trend-chart');
+  if (!hasData) { wrap.style.display = ''; canvas.style.display = 'none'; return; }
+  wrap.style.display = 'none'; canvas.style.display = 'block';
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: days.map(d => d.slice(5)),
+      datasets: [
+        { label: 'Productive (h)', data: productive, borderColor: '#4ade80', backgroundColor: '#4ade8015', fill: true, tension: 0.4 },
+        { label: 'Learning (h)', data: learning, borderColor: '#60a5fa', backgroundColor: '#60a5fa15', fill: true, tension: 0.4 }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { ticks: { color: '#444' }, grid: { color: '#1a1a28' } },
+        y: { ticks: { color: '#444' }, grid: { color: '#1a1a28' }, beginAtZero: true }
+      },
+      plugins: { legend: { labels: { color: '#666', font: { size: 11 } } } }
+    }
+  });
+}
+
+// ===== CAREER =====
+function selectRole(name, btn) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('career-role-name').textContent = name;
+  loadCareer();
+}
+
+function loadCareer() {
+  let totalXp = 0;
+  if (window.api && window.api.getCareerXp) {
+    window.api.getCareerXp().then(xp => renderCareer(xp));
+  } else {
+    const sessions = getSessions();
+    totalXp = sessions.filter(s => s.category === 'learning' || s.category === 'productive')
+                       .reduce((a,s) => a + s.duration, 0);
+    renderCareer(totalXp);
+  }
+}
+
+function renderCareer(xpSeconds) {
+  const hours = xpSeconds / 3600;
+  const levels = [
+    { name: 'Beginner', min: 0, max: 10 },
+    { name: 'Novice', min: 10, max: 25 },
+    { name: 'Apprentice', min: 25, max: 50 },
+    { name: 'Practitioner', min: 50, max: 100 },
+    { name: 'Professional', min: 100, max: 200 },
+    { name: 'Expert', min: 200, max: 500 },
+    { name: 'Master', min: 500, max: 500 }
+  ];
+  let current = levels[0];
+  for (const l of levels) { if (hours >= l.min) current = l; }
+  const pct = current.min === current.max ? 100 : Math.min(100, ((hours - current.min) / (current.max - current.min)) * 100);
+  document.getElementById('career-level-tag').textContent = current.name;
+  document.getElementById('career-xp-text').textContent = `${Math.round(hours*10)/10}h / ${current.max}h to next level`;
+  document.getElementById('career-prog-fill').style.width = pct + '%';
+  [10,25,50,100,200,500].forEach((h, i) => {
+    const el = document.getElementById('ms-'+(i+1));
+    if (hours >= h) el.classList.add('done'); else el.classList.remove('done');
+  });
+}
+
+// ===== HISTORY =====
+let historyFilter = 'all';
+
+function filterHistory(cat, btn) {
+  historyFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistory(cat);
+}
+
+function renderHistory(cat) {
+  let sessions;
+  if (window.api && window.api.getHistory) {
+    window.api.getHistory().then(rows => {
+      allHistory = rows;
+      _renderHistoryRows(cat === 'all' ? rows : rows.filter(r => r.category === cat));
+    });
+  } else {
+    sessions = getSessions().reverse();
+    allHistory = sessions;
+    const filtered = cat === 'all' ? sessions : sessions.filter(s => s.category === cat);
+    _renderHistoryRows(filtered);
+  }
+}
+
+function _renderHistoryRows(rows) {
+  const el = document.getElementById('history-list');
+  if (!rows.length) {
+    el.innerHTML = '<div style="color:#333;font-size:13px;padding:30px 0;text-align:center">No sessions found.</div>';
+    return;
+  }
+  el.innerHTML = rows.slice(0, 50).map(r => `
+    <div class="history-item">
+      <div>
+        <div class="hi-name">${r.app_name || r.appName || 'Unknown'}</div>
+        <div class="hi-date">${r.date || ''}</div>
+      </div>
+      <div class="hi-right">
+        <span class="hi-dur">${fmt(r.duration)}</span>
+        <span class="badge ${r.category}">${r.category}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== DEEP WORK =====
+function toggleDeepWork(val) {
+  deepWork = val;
+  document.getElementById('dw-sub-text').textContent = val ? 'Enforcement on' : 'Enforcement off';
+  if (window.api && window.api.setDeepWork) window.api.setDeepWork(val);
+}
+
+// ===== NUDGE OVERLAY =====
+let nudgeTimer = null;
+
+function showNudge(appName) {
+  document.getElementById('nudge-app-name').textContent = `You're about to log "${appName}". Pause for a moment.`;
+  document.getElementById('nudge-countdown').textContent = '5';
+  document.getElementById('nudge-intention').classList.remove('show');
+  document.getElementById('nudge-input').value = '';
+  document.getElementById('nudge-overlay').classList.add('show');
+
+  let count = 5;
+  nudgeTimer = setInterval(() => {
+    count--;
+    document.getElementById('nudge-countdown').textContent = count;
+    if (count <= 0) {
+      clearInterval(nudgeTimer);
+      document.getElementById('nudge-countdown').textContent = '';
+      document.getElementById('nudge-intention').classList.add('show');
+    }
+  }, 1000);
+}
+
+function proceedFromNudge() {
+  const val = document.getElementById('nudge-input').value.trim();
+  const words = val.split(/\s+/).filter(w => w.length > 0);
+  if (words.length < 5) {
+    document.getElementById('nudge-input').style.borderColor = '#f87171';
+    document.getElementById('nudge-input').placeholder = 'Please type at least 5 words...';
+    return;
+  }
+  document.getElementById('nudge-overlay').classList.remove('show');
+  // Now actually start the timer
+  timerRunning = true;
+  timerSeconds = 0;
+  const btn = document.getElementById('timer-btn');
+  btn.className = 'timer-btn active-btn';
+  btn.innerHTML = '⏹ Stop & Save';
+  document.getElementById('timer-display').classList.add('running');
+  const ringFill = document.getElementById('ring-fill');
+  const circumference = 440;
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    document.getElementById('timer-display').textContent = fmtTimer(timerSeconds);
+    const progress = (timerSeconds % 60) / 60;
+    ringFill.style.strokeDashoffset = circumference - (progress * circumference);
+  }, 1000);
+}
+
+// ===== ELECTRON IPC LISTENERS =====
+if (window.api) {
+  if (window.api.onActiveWindow) {
+    window.api.onActiveWindow(({ title, category }) => {
+      // Auto-fill input if timer not running
+      if (!timerRunning) {
+        document.getElementById('activity-input').value = title;
+        onActivityInput(title);
+      }
+    });
+  }
+  if (window.api.onSessionSaved) {
+    window.api.onSessionSaved(() => loadDashboard());
+  }
+  if (window.api.onBlocked) {
+    window.api.onBlocked((title) => {
+      document.getElementById('blocked-msg').textContent = `"${title}" is blocked. Deep Work mode is active.`;
+      document.getElementById('blocked-overlay').classList.add('show');
+    });
+  }
+}
+
+// ===== INIT =====
+loadDashboard();
+setInterval(loadDashboard, 15000);
+</script>
+</body>
+</html>
